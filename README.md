@@ -2,11 +2,43 @@
 
 Sync Cold Turkey browser stats into a Google Sheet.
 
-## Setup
+## What it does
 
-1. Create a Google Cloud service account and download its JSON key.
-2. Share your Google Sheet with the service account email.
-3. Create `.env` from `.env.example` and fill in values.
+- Reads the Cold Turkey browsing statistics
+- Aggregates by domain and date
+- Pushes changes incrementally to a Google Sheet
+
+## Requirements
+
+- Python 3.10+
+- A Google Sheet you own
+- A Google Cloud service account JSON key
+
+## Google Sheets setup (service account)
+
+1. Create a Google Cloud project (or use an existing one).
+2. Enable the Google Sheets API.
+3. Create a service account and download its JSON key.
+4. Share your Google Sheet with the service account email (Editor access).
+
+## Configure
+
+Copy the example env file and edit it:
+
+```bash
+cp .env.example .env
+```
+
+Required values:
+
+- `COLD_TURKEY_DB_PATH` (path to the Cold Turkey sqlite file, on MacOS this is likely "/Library/Application Support/Cold Turkey/data-browser.db")
+- `GOOGLE_SHEET_ID` (the sheet ID from the URL)
+- `GOOGLE_SERVICE_ACCOUNT_JSON` (path to the JSON key file)
+
+Optional:
+
+- `GOOGLE_SHEET_WORKSHEET` (defaults to `Raw Data`)
+- `SYNC_CURSOR_PATH` (defaults to `.sync_cursor.json`)
 
 ## Install
 
@@ -24,20 +56,28 @@ pip install -r requirements.txt
 
 ## macOS launchd setup
 
-This will run the sync once at login and once daily at 12:01 AM local time.
+This installs a LaunchAgent that runs at login and daily at 12:01 AM local time.
 
 ```bash
 ./macos/setup_launchd.sh
 ```
 
-Useful commands:
+Check status/logs:
 
 ```bash
 launchctl list | grep com.coldturkey.stats-sync
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.coldturkey.stats-sync.plist
+tail -n 200 /Users/shawn/coding/cold-turkey-stats-sync/macos/launchd.out.log
+tail -n 200 /Users/shawn/coding/cold-turkey-stats-sync/macos/launchd.err.log
 ```
 
-## Notes
+Uninstall:
 
-- Data is aggregated by local date and domain, then appended to the `Raw Data` worksheet.
-- A cursor file stores the last synced local date to keep syncs incremental.
+```bash
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.coldturkey.stats-sync.plist
+rm -f ~/Library/LaunchAgents/com.coldturkey.stats-sync.plist
+```
+
+## Troubleshooting
+
+- If the script says “No completed days to sync yet,” it is skipping the current day by design.
+- If LaunchAgent commands fail, ensure `~/Library/LaunchAgents` is owned by your user.
