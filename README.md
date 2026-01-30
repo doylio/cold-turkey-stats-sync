@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ## macOS launchd setup
 
-This will run the sync once at login and once daily at 9:00 local time.
+This will run the sync once at login and once daily at 12:01 AM local time.
 
 ```bash
 ./macos/setup_launchd.sh

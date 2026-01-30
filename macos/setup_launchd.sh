@@ -33,9 +33,9 @@ cat > "$PLIST_DEST" <<EOF
     <key>StartCalendarInterval</key>
     <dict>
       <key>Hour</key>
-      <integer>9</integer>
-      <key>Minute</key>
       <integer>0</integer>
+      <key>Minute</key>
+      <integer>1</integer>
     </dict>
 
     <key>StandardOutPath</key>
