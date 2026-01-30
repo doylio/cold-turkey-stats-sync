@@ -130,7 +130,7 @@ def ensure_headers(service, sheet_id: str, worksheet: str) -> None:
             insertDataOption="INSERT_ROWS",
             body={"values": [["Domain", "Date", "Minutes"]]},
         ).execute()
-    ensure_date_column_text_format(service, sheet_id, worksheet)
+    ensure_date_column_date_format(service, sheet_id, worksheet)
 
 
 def get_sheet_id(service, sheet_id: str, worksheet: str) -> int | None:
@@ -145,7 +145,7 @@ def get_sheet_id(service, sheet_id: str, worksheet: str) -> int | None:
     return None
 
 
-def ensure_date_column_text_format(service, sheet_id: str, worksheet: str) -> None:
+def ensure_date_column_date_format(service, sheet_id: str, worksheet: str) -> None:
     gid = get_sheet_id(service, sheet_id, worksheet)
     if gid is None:
         return
@@ -160,7 +160,7 @@ def ensure_date_column_text_format(service, sheet_id: str, worksheet: str) -> No
                     },
                     "cell": {
                         "userEnteredFormat": {
-                            "numberFormat": {"type": "TEXT"}
+                            "numberFormat": {"type": "DATE", "pattern": "yyyy-mm-dd"}
                         }
                     },
                     "fields": "userEnteredFormat.numberFormat",
@@ -176,7 +176,7 @@ def append_rows(service, sheet_id: str, worksheet: str, rows: list[list[str | fl
     service.spreadsheets().values().append(
         spreadsheetId=sheet_id,
         range=range_name,
-        valueInputOption="RAW",
+        valueInputOption="USER_ENTERED",
         insertDataOption="INSERT_ROWS",
         body={"values": rows},
     ).execute()
