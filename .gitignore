@@ -1,0 +1,8 @@
+.env
+.venv/
+.sync_cursor.json
+__pycache__/
+*.pyc
+credentials/*
+macos/launchd.err.log
+macos/launchd.out.log
